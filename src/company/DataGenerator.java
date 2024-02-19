@@ -46,11 +46,12 @@ public class DataGenerator {
         Product product1 = new Product(UUID.randomUUID(),"PS5",400d,5, 5, CATEGORY_LIST.get(0).getId());
         Product product2 = new Product(UUID.randomUUID(), "Chair", 25.5, 15, 15, CATEGORY_LIST.get(1).getId());
         Product product3 = new Product(UUID.randomUUID(), "Day Cream", 14.5, 50, 50, CATEGORY_LIST.get(2).getId());
+        Product product4 = new Product(UUID.randomUUID(),"Meat",12.5,40,40,UUID.randomUUID());
 
         PRODUCT_LIST.add(product1);
         PRODUCT_LIST.add(product2);
         PRODUCT_LIST.add(product3);
-
+        PRODUCT_LIST.add(product4);
 
     }
 
