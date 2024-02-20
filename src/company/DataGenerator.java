@@ -1,5 +1,8 @@
 package company;
 
+import company.balance.Balance;
+import company.balance.CustomerBalance;
+import company.balance.GiftCardBalance;
 import company.category.Category;
 import company.category.Electronic;
 import company.category.Furniture;
@@ -52,6 +55,16 @@ public class DataGenerator {
         PRODUCT_LIST.add(product2);
         PRODUCT_LIST.add(product3);
         PRODUCT_LIST.add(product4);
+
+    }
+
+    public static void createBalance(){
+
+        Balance customerBalance = new CustomerBalance(CUSTOMER_LIST.get(0).getId(), 500d);
+        Balance giftCardBalance = new GiftCardBalance(CUSTOMER_LIST.get(1).getId(), 350d);
+
+        CUSTOMER_BALANCE_LIST.add(customerBalance);
+        GIFT_CARD_BALANCE_LIST.add(giftCardBalance);
 
     }
 
