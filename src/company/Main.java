@@ -13,6 +13,8 @@ public class Main {
         createCustomer();
         createCategory();
         createProduct();
+        //createDiscount();
+        //createBalance();
 
 
         // Asking user to choose customer
@@ -50,21 +52,21 @@ public class Main {
                         }
                     }
                     break;
-                case 2:
+                case 2: // list discounts
                     break;
-                case 3:
+                case 3: // see balance
                     break;
-                case 4:
+                case 4: // add balance
                     break;
-                case 5:
+                case 5: // place an order
                     break;
-                case 6:
+                case 6: // see cart
                     break;
-                case 7:
+                case 7: // see order details
                     break;
-                case 8:
+                case 8: // see your addresses
                     break;
-                case 9:
+                case 9: // close app
                     break;
             }
 
