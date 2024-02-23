@@ -5,7 +5,13 @@ import company.balance.CustomerBalance;
 import company.balance.GiftCardBalance;
 import company.category.Category;
 import company.discount.Discount;
+import company.order.OrderService;
+import company.order.OrderServiceImpl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -31,6 +37,8 @@ public class Main {
         }
 
         Customer customer = CUSTOMER_LIST.get(scanner.nextInt());
+
+        Cart cart = new Cart(customer);
 
         while(true){
 
@@ -92,6 +100,63 @@ public class Main {
 
                     break;
                 case 5: // place an order
+                    Map<Product, Integer> productMap = new HashMap<>();
+                    cart.setProductMap(productMap);
+                    while(true){
+                        System.out.println("Which product you want to add to your cart. For exit product selection type: exit");
+                        for (Product product : PRODUCT_LIST) {
+                            try {
+                                System.out.println("Product id: " + product.getId() + " price:" + product.getUnitPrice()+
+                                                   "product category: " + product.getCategoryName() +
+                                                    " stock: " + product.getStock() + " product delivery due: " + product.getDeliveryDueDate());
+                            } catch (Exception e) {
+                                System.out.println(e.getMessage());
+                            }
+                        }
+                        String productId = scanner.next();
+
+                        try {
+                            Product product = findProductById(productId);
+                            if (!putItemToCartIfStockAvailable(cart, product)){
+                                System.out.println("Stock is insufficient, Please try again!");
+                                continue;
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Product does not exists. Please try again.");
+                            continue;
+                        }
+
+                        System.out.println("Do you want to add more product? Type Y for adding more, N for exit");
+                        String decision = scanner.next();
+                        if (!decision.equals("Y")){
+                            break;
+                        }
+                    }
+                    System.out.println("seems there are discount options. Do you want to see and apply to your cart if it is applicable. For no discount type no");
+                    for (Discount discount : DISCOUNT_LIST) {
+                        System.out.println("discount id: " + discount.getId() + " discount name: " + discount.getName());
+                    }
+                    String discountId = scanner.next();
+                    if (!discountId.equals("no")){
+                        try {
+                            Discount discount = findDiscountById(discountId);
+                            if (discount.decideDiscountIsApplicableToCart(cart)){
+                                cart.setDiscountId(discount.getId());
+                            }
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+                    }
+
+                    OrderService orderService = new OrderServiceImpl();
+                    String result = orderService.placeOrder(cart);
+                    if (result.equals("Order has been placed successfully")){
+                        System.out.println("Order is successful");
+                        cart.setProductMap(new HashMap<>());
+                        cart.setDiscountId(null);
+                    }else{
+                        System.out.println(result);
+                    }
                     break;
                 case 6: // see cart
                     break;
@@ -109,7 +174,43 @@ public class Main {
 
     }
 
-    private static CustomerBalance findCustomerBalance(UUID customerId){
+    public static Discount findDiscountById(String discountId) throws Exception {
+        for (Discount discount : DISCOUNT_LIST) {
+            if (discountId.equals(discount.getId().toString())){
+                return discount;
+            }
+        }
+        throw new Exception("Discount not found");
+    }
+
+    private static boolean putItemToCartIfStockAvailable(Cart cart, Product product){
+        System.out.println("Please provide product count:");
+        Scanner scanner = new Scanner(System.in);
+        int count = scanner.nextInt();
+
+        Integer cartCount = cart.getProductMap().get(product);
+
+        if (cartCount != null && product.getRemainingStock() > cartCount + count){
+            cart.getProductMap().put(product, cartCount + count);
+            return true;
+        }else if (product.getRemainingStock() >= count){
+            cart.getProductMap().put(product, count);
+            return true;
+        }
+        return false;
+
+    }
+
+    private static Product findProductById(String productId) throws Exception {
+        for (Product product : PRODUCT_LIST) {
+            if (productId.equals(product.getId().toString())){
+                return product;
+            }
+        }
+        throw new Exception("Product could not found");
+    }
+
+    public static CustomerBalance findCustomerBalance(UUID customerId){
         for (Balance balance : CUSTOMER_BALANCE_LIST) {
             if (balance.getCustomerId().toString().equals(customerId.toString())){
                 return (CustomerBalance) balance;
@@ -121,7 +222,7 @@ public class Main {
         return customerBalance;
     }
 
-    private static GiftCardBalance findGiftCardBalance(UUID customerId){
+    public static GiftCardBalance findGiftCardBalance(UUID customerId){
         for (Balance balance : GIFT_CARD_BALANCE_LIST) {
             if (balance.getCustomerId().toString().equals(customerId.toString())){
                 return (GiftCardBalance) balance;

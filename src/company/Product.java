@@ -2,6 +2,7 @@ package company;
 
 import company.category.Category;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Product {
@@ -20,6 +21,15 @@ public class Product {
         this.stock = stock;
         this.remainingStock = remainingStock;
         this.categoryId = categoryId;
+    }
+
+    public LocalDateTime getDeliveryDueDate() throws Exception {
+        for (Category category : StaticConstants.CATEGORY_LIST) {
+            if (category.getId().toString().equals(getCategoryId())){
+                return category.calculateDeliveryTime();
+            }
+        }
+        throw new Exception("Category could not found.");
     }
 
     public String getCategoryName() throws Exception {
