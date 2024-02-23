@@ -25,7 +25,7 @@ public class Product {
 
     public LocalDateTime getDeliveryDueDate() throws Exception {
         for (Category category : StaticConstants.CATEGORY_LIST) {
-            if (category.getId().toString().equals(getCategoryId())){
+            if (category.getId().toString().equals(getCategoryId().toString())){
                 return category.calculateDeliveryTime();
             }
         }

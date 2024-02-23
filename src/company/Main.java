@@ -5,6 +5,7 @@ import company.balance.CustomerBalance;
 import company.balance.GiftCardBalance;
 import company.category.Category;
 import company.discount.Discount;
+import company.order.Order;
 import company.order.OrderService;
 import company.order.OrderServiceImpl;
 
@@ -24,8 +25,8 @@ public class Main {
         createCustomer();
         createCategory();
         createProduct();
-        //createDiscount();
-        //createBalance();
+        createDiscount();
+        createBalance();
 
 
         // Asking user to choose customer
@@ -66,8 +67,8 @@ public class Main {
                     }
                     break;
                 case 2: // list discounts
-                    for (Discount discount : DISCOUNT_LIST) {
-                        System.out.println("Discount name: " + discount.getName() + " discount threshold amount: " + discount.getThresholdAmount());
+                    for(Discount discount : DISCOUNT_LIST){
+                        System.out.println("Discount Name: " + discount.getName() + "discount threshold amount: " + discount.getThresholdAmount());
                     }
                     break;
                 case 3: // see balance
@@ -82,7 +83,7 @@ public class Main {
                     CustomerBalance customerBalance = findCustomerBalance(customer.getId());
                     GiftCardBalance giftCardBalance = findGiftCardBalance(customer.getId());
                     System.out.println("Which account would you like to add?");
-                    System.out.println("Type 1 for customer balance: " + customerBalance.getCustomerId());
+                    System.out.println("Type 1 for customer balance: " + customerBalance.getBalance());
                     System.out.println("Type 2 for gift card balance: " + giftCardBalance.getBalance());
                     int balanceAccountSelection = scanner.nextInt();
                     System.out.println("How much would you like to add?");
@@ -159,12 +160,23 @@ public class Main {
                     }
                     break;
                 case 6: // see cart
+                    System.out.println("Your cart");
+                    if (!cart.getProductMap().keySet().isEmpty()){
+                        for (Product product : cart.getProductMap().keySet()) {
+                            System.out.println("Product name: " + product.getName() + " count: " + cart.getProductMap().get(product));
+                        }
+                    }else{
+                        System.out.println("Your cart is empty.");
+                    }
                     break;
                 case 7: // see order details
+                    printOrdersByCustomerId(customer.getId());
                     break;
                 case 8: // see your addresses
+                    printAddressByCustomerId(customer);
                     break;
                 case 9: // close app
+                    System.exit(1);
                     break;
             }
 
@@ -172,6 +184,22 @@ public class Main {
 
 
 
+    }
+
+    private static void printAddressByCustomerId(Customer customer){
+        for (Address address : customer.getAddressList()) {
+            System.out.println(" Street Name: " + address.getStreetName() +
+                    " Street Number: " + address.getStreetNumber() + "ZipCode:  "
+                    + address.getZipcode() + " State: " + address.getState());
+        }
+    }
+
+    private static void printOrdersByCustomerId(UUID customerId){
+        for (Order order : ORDER_LIST) {
+            if (order.getCustomerId().toString().equals(customerId.toString())){
+                System.out.println("Order status: "  + order.getOrderStatus() + " order amount: " + order.getPaidAmount() + " order date: " + order.getOrderDate());
+            }
+        }
     }
 
     public static Discount findDiscountById(String discountId) throws Exception {

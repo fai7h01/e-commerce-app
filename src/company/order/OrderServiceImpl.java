@@ -13,7 +13,7 @@ import java.util.UUID;
 import static company.Main.findDiscountById;
 import static company.StaticConstants.ORDER_LIST;
 
-public class OrderServiceImpl extends OrderService{
+public class OrderServiceImpl implements OrderService {
 
     @Override
     public String placeOrder(Cart cart) {
